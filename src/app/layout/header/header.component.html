@@ -1,0 +1,26 @@
+<div class="header" [class.wide]="isWide">
+    <div class="menu-circle"></div>
+    <div class="header-menu">
+      <a class="menu-link" [class.is-active]="activeLink === 'Inicio'" (click)="setActiveLink('Inicio')" >Inicio</a>
+      <a class="menu-link notify" [class.is-active]="activeLink === 'Actividades'" (click)="setActiveLink('Your work')">Actividades</a>
+      <!-- <a class="menu-link" [class.is-active]="activeLink === 'Discover'" (click)="setActiveLink('Discover')" href="#">Explorar</a>
+      <a class="menu-link notify" [class.is-active]="activeLink === 'Market'" (click)="setActiveLink('Market')" href="#">Chat</a> -->
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="Buscar" (focus)="onSearchFocus()" (blur)="onSearchBlur()">
+    </div>
+    <div  class="header-profile">
+      <div class="notification">
+        <span class="notification-number">3</span>
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
+        </svg>
+        <a routerLink="home"></a>
+      </div>
+    
+      <img class="profile-img" src="https://images.unsplash.com/photo-1600353068440-6361ef3a86e8?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="">
+    </div>
+
+    
+    <lib-country-list  [selectedCountryCode]="'hn' "></lib-country-list>
+  </div>

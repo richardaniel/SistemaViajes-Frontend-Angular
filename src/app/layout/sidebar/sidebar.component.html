@@ -1,0 +1,49 @@
+<!-- <div class="left-side">
+  <div class="side-wrapper">
+    <div class="side-title">Menu</div>
+    <div class="side-menu">
+      <div *ngFor="let item of menuItems" 
+           class="menu-item" 
+           (mouseenter)="toggleSubmenu(item, true)" 
+           (mouseleave)="toggleSubmenu(item, false)">
+
+        <a [routerLink]="item.link">{{ item.label }}</a>
+
+       
+        <div class="submenu" *ngIf="item.isOpen">
+          <a *ngFor="let sub of item.submenu" [routerLink]="sub.link">{{ sub.label }}</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<div class="left-side">
+  <div class="side-wrapper">
+    <div class="side-title">Menu</div>
+    <div class="side-menu">
+      <div *ngFor="let item of menuItems" 
+           class="menu-item" 
+           (mouseenter)="toggleSubmenu(item, true)" 
+           (mouseleave)="toggleSubmenu(item, false)">
+           
+        
+        <div class="menu-item-content">
+          <dx-button
+            stylingMode="text"
+            [icon]="item.icon"
+            class="w-6 h-6 flex items-center justify-center rounded-md bg-blue-500 text-white hover:bg-gray-500 transition">
+          </dx-button>
+
+          <a [routerLink]="item.link">{{ item.label }}</a>
+        </div>
+
+        <div class="submenu" *ngIf="item.isOpen && item.submenu.length > 0">
+          <a *ngFor="let sub of item.submenu" [routerLink]="sub.link">{{ sub.label }}</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

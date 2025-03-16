@@ -1,0 +1,91 @@
+<!-- <div class="flex items-center justify-center min-h-screen bg-gray-900">
+  <div class="w-full max-w-lg p-6 bg-white/10 backdrop-blur-lg rounded-xl shadow-lg border border-white/20">
+    
+    <h2 class="text-3xl font-bold text-white text-center mb-6">Formulario de Sucursal</h2>
+
+   
+
+   
+  </div>
+</div> -->
+
+<h2 class="text-3xl font-bold text-white text-center mb-6">Registrar Colaborador</h2>
+
+
+<form [formGroup]="colaboradorForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      
+    
+  <div>
+    <label class="block text-white font-semibold mb-1">Nombre:</label>
+    <input 
+      class="w-full px-4 py-2 bg-white/20 text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-300"
+      formControlName="nombre" placeholder="Ingrese el nombre">
+    <div *ngIf="colaboradorForm.get('nombre')?.invalid && colaboradorForm.get('nombre')?.touched" class="text-red-400 text-sm mt-1">
+      El nombre es obligatorio y debe tener al menos 3 caracteres.
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-white font-semibold mb-1">Apellido:</label>
+    <input 
+      class="w-full px-4 py-2 bg-white/20 text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-300"
+      formControlName="apellido" placeholder="Ingrese el apellido">
+    <div *ngIf="colaboradorForm.get('apellido')?.invalid && colaboradorForm.get('apellido')?.touched" class="text-red-400 text-sm mt-1">
+      El apellido es obligatorio y debe tener al menos 3 caracteres.
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-white font-semibold mb-1">Correo:</label>
+    <input 
+      class="w-full px-4 py-2 bg-white/20 text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-300"
+      formControlName="email" placeholder="Ingrese el correo ">
+    <div *ngIf="colaboradorForm.get('email')?.invalid && colaboradorForm.get('email')?.touched" class="text-red-400 text-sm mt-1">
+      El correo es obligatorio y debe tener un formato valido.
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-white font-semibold mb-1">Telefono:</label>
+    <input 
+      class="w-full px-4 py-2 bg-white/20 text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-300"
+      formControlName="telefono" placeholder="Ingrese el numero de telefono ">
+    <div *ngIf="colaboradorForm.get('telefono')?.invalid && colaboradorForm.get('telefono')?.touched" class="text-red-400 text-sm mt-1">
+      El telefono es obligatorio y debe tener un formato valido.
+    </div>
+  </div>
+
+  <dx-button
+  type="normal"
+  class="text-base w-full px-4 py-2 mt-4 text-white bg-green-500 rounded-lg hover:bg-green-700 disabled:bg-gray-500 transition-all"
+  (click)="openMapPopup()"
+  >Registrar Ubicacion</dx-button>
+
+  <div>
+    <label class="block text-white font-semibold mb-1">Dirección:</label>
+    <input 
+      type="text" 
+      formControlName="direccion"
+      class="w-full px-4 py-2 bg-white/20 text-white border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-300"
+      value="{{selectedLocation?.address}}">
+   
+  </div>
+
+  <button 
+    type="submit"
+    class="text-base w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-gray-500 transition-all">
+    Guardar
+  </button>
+
+</form>
+
+<app-mapa-modal 
+  [isVisible]="isMapPopupVisible"
+  [selectedLocation]="selectedLocation"
+  (closePopup)="closeMapPopup()"
+  (locationSelected)="onLocationSelected($event)">
+</app-mapa-modal>
+
+
+
+

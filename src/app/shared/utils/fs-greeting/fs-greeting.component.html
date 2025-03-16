@@ -1,0 +1,14 @@
+<div class="welcome-home">
+    <div class="greeting">
+     
+
+      <i class="{{currentIcon}} icons"></i>
+      <p>
+        <span class="time-of-day {{currentClass}}">{{timeOfDay}}</span>
+        <span class="username" *ngIf="name.length > 0">{{name}}</span>
+      </p>
+    </div>
+    <img class="animated rubberBand" [src]="currentImg">
+  </div>
+
+  

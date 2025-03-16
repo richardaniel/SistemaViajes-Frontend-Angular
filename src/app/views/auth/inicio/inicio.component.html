@@ -1,0 +1,24 @@
+<div class="home">
+  <fs-greeting [name]="fsAuthService.currentUser.firstName"></fs-greeting>
+
+  <div class="flex-row justify-center contenedor-bienvenida"
+    *ngIf="!fsAuthService.userIsAuthenticated">
+    <span class="bienvenida">
+      <h3>¡Bienvenido!</h3>
+      <h3 class="d-grid">
+        <span class="no-wrap">Para continuar, deberá </span>
+        <span class="no-wrap">
+          <span class="text-link" (click)="fsAuthService.signInAsync()">iniciar
+            sesión</span>
+          con su usuario
+        </span>
+      </h3>
+    </span>
+
+    <button type="button" class="btn btn-primary"
+      (click)="fsAuthService.signInAsync()">
+      <i class="ti-user"></i>
+      INICIAR SESIÓN
+    </button>
+  </div>
+</div>

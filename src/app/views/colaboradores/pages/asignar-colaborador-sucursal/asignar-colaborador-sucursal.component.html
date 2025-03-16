@@ -1,0 +1,71 @@
+<h2 class="text-3xl font-bold text-white text-center mb-6">Asignar Colaborador a Sucursal</h2>
+
+
+<form [formGroup]="colaboradorAsignForm" (ngSubmit)="onSubmit()"   class="space-y-4">
+      
+    <div class="space-y-6">
+      
+        <div>
+          <label class="block text-white font-semibold mb-2">Colaborador:</label>
+          <dx-select-box
+            [items]="colaboradores"
+            displayExpr="nombre"
+            valueExpr="colaboradorId"
+            placeholder="Seleccione un colaborador"
+            formControlName="colaborador"
+            [searchEnabled]="true"
+            (onValueChanged)="showDetailsColaborador($event)"
+            class="w-full bg-white/10 border border-white/20 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-300">
+          </dx-select-box>
+          <div *ngIf="colaboradorAsignForm.get('colaborador')?.invalid && colaboradorAsignForm.get('colaborador')?.touched" class="text-red-400 text-sm mt-1">
+            Debe seleccionar un colaborador.
+          </div>
+        </div>
+      
+      
+        <div>
+          <label class="block text-white font-semibold mb-2">Sucursal:</label>
+          <dx-select-box
+            [dataSource]="sucursales"
+            displayExpr="nombre"
+            valueExpr="sucursalId"
+            placeholder="Seleccione una sucursal"
+            formControlName="sucursal"
+            [searchEnabled]="true"
+            (onValueChanged)="showDetailsSucursal($event)"
+            class="w-full bg-white/10 border border-white/20 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-300">
+          </dx-select-box>
+          <div *ngIf="colaboradorAsignForm.get('sucursal')?.invalid && colaboradorAsignForm.get('sucursal')?.touched" class="text-red-400 text-sm mt-1">
+            Debe seleccionar una sucursal.
+          </div>
+        </div>
+      </div>
+      
+      
+<div *ngIf="colaboradorSeleccionado" class="bg-gray-900 text-white p-6 mt-4 rounded-lg shadow-lg">
+    <h2 class="text-xl font-bold mb-2">Detalles del Colaborador</h2>
+    <p><strong>Nombre:</strong> {{ colaboradorSeleccionado.nombre }}</p>
+    <p><strong>Email:</strong> {{ colaboradorSeleccionado.email }}</p>
+    <p><strong>Teléfono:</strong> {{ colaboradorSeleccionado.telefono }}</p>
+   
+  </div>
+
+  <div *ngIf="sucursalSeleccionada" class="bg-gray-900 text-white p-6 mt-4 rounded-lg shadow-lg">
+    <h2 class="text-xl font-bold mb-2">Detalles de la Sucursal</h2>
+    <p><strong>Nombre:</strong> {{ colaboradorSeleccionado.nombre }}</p>
+    <p><strong>Direccion:</strong> {{ colaboradorSeleccionado.email }}</p>
+  </div>
+
+  <button 
+    type="submit"
+    class="text-base w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-gray-500 transition-all">
+    Guardar
+  </button>
+
+</form>
+
+
+
+
+
+

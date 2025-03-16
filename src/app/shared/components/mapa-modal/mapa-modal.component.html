@@ -1,0 +1,36 @@
+<dx-popup
+  [(visible)]="isVisible"
+  [width]="900"
+  [height]="600"
+  [showTitle]="true"
+  title="Selecciona tu Ubicación"
+  [dragEnabled]="true"
+  [closeOnOutsideClick]="true"
+  (onHiding)="closePopup.emit()">
+  
+  <div class="map-container">
+    <google-map
+      height="400px"
+      width="100%"
+      [center]="center"
+      [zoom]="zoom"
+      (mapClick)="placeMarker($event)">
+      
+      <map-marker *ngIf="selectedMarker" [position]="selectedMarker"></map-marker>
+    
+    </google-map>
+  </div>
+
+  <div class="p-4 bg-gray-100 rounded-lg mt-2">
+    <p><strong>Dirección:</strong> {{ addressDetails.address || 'Selecciona un punto en el mapa' }}</p>
+    <p><strong>País:</strong> {{ addressDetails.country }}</p>
+    <p><strong>Estado:</strong> {{ addressDetails.state }}</p>
+    <p><strong>Ciudad:</strong> {{ addressDetails.city }}</p>
+  </div>
+
+  <div class="popup-actions flex justify-end space-x-2 p-3">
+    <dx-button text="Cancelar" type="normal" (onClick)="closePopup.emit()"></dx-button>
+    <dx-button text="Guardar" type="success" (onClick)="confirmLocation()"></dx-button>
+  </div>
+  
+</dx-popup>

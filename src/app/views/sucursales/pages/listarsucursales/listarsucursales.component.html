@@ -1,0 +1,29 @@
+<h2 class="text-3xl font-bold text-white text-center mb-6">Registro de Colaboradores</h2>
+
+<div class="relative bg-opacity-40 backdrop-blur-md p-4 rounded-lg shadow-lg">
+  <dx-data-grid
+    class="mt-2 border shadow-lg rounded-lg custom-grid"
+    [dataSource]="sucursales"
+    [showBorders]="false"
+    [columnAutoWidth]="true"
+    [height]="480"
+    [paging]="{ pageSize: 10 }"
+    [filterRow]="{ visible: true }"
+    [searchPanel]="{ visible: true, width: 250, placeholder: 'Buscar...' }"
+    [export]="{ enabled: true, allowExportSelectedData: true }"
+    [rowAlternationEnabled]="false"
+    [hoverStateEnabled]="false"
+    keyExpr="sucursalId">
+
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[5, 10]" [showInfo]="true"></dxo-pager>
+
+    <dxi-column dataField="sucursalId" caption="Codigo" [width]="80" class="text-xl"></dxi-column>
+    <dxi-column dataField="nombre" caption="Nombre"></dxi-column>
+    <dxi-column dataField="direccion" caption="Direccion"></dxi-column>
+    <dxi-column dataField="activo" caption="Activo" type="boolean"></dxi-column>
+
+    <dxo-export [enabled]="true" fileName="Colaboradores"></dxo-export>
+
+  </dx-data-grid>
+</div>

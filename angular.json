@@ -7,6 +7,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
+          "skipTests": true,
           "style": "scss"
         }
       },
@@ -30,7 +31,12 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/devextreme/dist/css/dx.common.css",
+              "node_modules/devextreme/dist/css/dx.light.compact.css",
+               "node_modules/ngx-countries-dropdown/assets/styles.css",
+               "node_modules/sweetalert2/src/sweetalert2.scss"
+              
             ],
             "scripts": []
           },
