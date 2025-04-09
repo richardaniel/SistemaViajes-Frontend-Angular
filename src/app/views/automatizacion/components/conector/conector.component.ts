@@ -8,6 +8,7 @@ import { ProductoBaseDeDatos } from '../../models/ProductoBD';
 import { NombreProductoCoincidencia } from '../../models/NombreProductoCoincidencia';
 import { SweetAlertService } from '../../../../shared/services/sweet-alert.service';
 import { ProductoService } from '../../services/producto.service';
+import { ProductoInsert } from '../../models/ProductoInsert';
 
 @Component({
   selector: 'app-conector',
@@ -154,4 +155,36 @@ export class ConectorComponent implements OnInit {
     };
     reader.readAsDataURL(file);
   }
+
+
+
+  enviarMatchProducto() {
+    const productoSelect = this.productosFiltrados.find(p => p.Producto_ID === this.productoSeleccionado);
+    const productoGrid = this.productosCoincidencia.find(p => p.nombre === this.nombreFiltro);
+  
+    if (!productoSelect || !productoGrid) {
+      this.sweetAlert.error('Error', 'Debe seleccionar un producto del grid y del select.');
+      return;
+    }
+  
+    const matchData: ProductoInsert[] = [{
+      itemcode: productoSelect.Producto_ID,
+      codigobarra: productoSelect.CodBarra,
+      descripcionproductobd: productoSelect.Nombre,
+      descripcionproductoextraido: productoGrid.nombre
+    }];
+
+    console.log(matchData);
+  
+    this.productoService.insertarProducto(matchData).subscribe({
+      next: () => {
+        this.sweetAlert.exito('Éxito', 'Match enviado correctamente.');
+      },
+      error: (err) => {
+        console.error('Error al enviar match:', err);
+        this.sweetAlert.error('Error', 'No se pudo enviar el match.');
+      }
+    });
+  }
+  
 }
