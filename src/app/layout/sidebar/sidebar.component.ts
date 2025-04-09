@@ -56,7 +56,11 @@ menuItems = [
     isOpen: false 
   },
 
-  { label: 'Reportería', link: '/home/reportes', icon:'textdocument', submenu: [], isOpen: false },
+  { label: 'Reportes', link: '/home/reportes', icon:'textdocument', submenu: [], isOpen: false },
+
+  {
+    label : 'Automatizacion' , link: '/home/automatizacion' , icon:'user',submenu:[] ,isOpen:false 
+  }
 
 ];
 

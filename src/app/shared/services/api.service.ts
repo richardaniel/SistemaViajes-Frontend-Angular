@@ -6,7 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'https://localhost:44390/api'; 
+  // private baseUrl = 'https://localhost:44390/api'; 
+
+  private baseUrl = 'https://apps.academia-dev.grupofarsiman.io/staging/academia/transporteapi/api'
 
   constructor(private http: HttpClient) {}
 
@@ -22,7 +24,14 @@ export class ApiService {
 
 
   post<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}/${endpoint}`, data);
+    const url = `${this.baseUrl}/${endpoint}`;
+
+    // Si data es FormData, no agregar headers
+    if (data instanceof FormData) {
+      return this.http.post<T>(url, data);
+    }
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<T>(url, data, { headers: headers });
   }
 
 

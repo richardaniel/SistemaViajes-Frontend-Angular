@@ -2,7 +2,20 @@
 
 import { Environments } from "@farsiman/idf-angular";
 
-export const environments={
+
+export const apis = {
+  authAdmin: 'https://api.corporativo.grupofarsiman.io/staging/seguridad/identidad-farsiman-admin-api',
+}
+export const environment={
+
+    production :false ,
+    uat:false,
+    requireAuthorization:false,
+    environment: Environments.Development,
+    baseUri: 'http://localhost:4200',
+    authServer: 'https://auth-server-staging.grupofarsiman.com',
+    authAdmin: apis.authAdmin,
+
     auth_config: {
         environment: Environments.Staging,
         url: 'http://localhost:4200',

@@ -147,14 +147,16 @@ body.light-mode .video-bg:before {
 
 .app {
  background-color: var(--theme-bg-color);
- max-width: 1250px;
- max-height: 860px;
+ max-width: 2950px;
+ max-height: 2860px;
+ height: 2000px;
+ width: 2000px;
  height: 90vh;
  display: flex;
  flex-direction: column;
  overflow: hidden;
  position: relative;
- width: 100%;
+ 
  border-radius: 14px;
  backdrop-filter: blur(20px);
  -webkit-backdrop-filter: blur(20px);

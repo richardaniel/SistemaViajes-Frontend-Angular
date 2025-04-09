@@ -25,8 +25,12 @@ export class ColaboradorService {
     return this.apiService.get(`ColaboradorSucursal/ObtenerColaboradoresAsignados`);
   }
 
-  addColaborador(data: Colaborador): Observable<any> {
-    return this.apiService.post(`${this.endpoint}/crearColaborador`, data);
+  // addColaborador(data: Colaborador): Observable<any> {
+  //   return this.apiService.post(`${this.endpoint}/crearColaborador`, data);
+  // }
+
+  addColaborador(formData: FormData): Observable<any> {
+    return this.apiService.post(`${this.endpoint}/CrearColaborador`, formData); 
   }
 
   addColaboradorSucursal(data :AsignarColaborador):Observable<any>{

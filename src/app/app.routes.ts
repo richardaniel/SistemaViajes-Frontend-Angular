@@ -77,6 +77,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./views/viajes/pages/listar-viaje/listar-viaje.component')
             .then((c) => c.ListarViajeComponent),
+      },
+      {
+        path : 'automatizacion',
+        loadComponent : () => 
+          import('./views/automatizacion/pages/automatizacion/automatizacion.component').then((c)=>c.AutomatizacionComponent)
       }
     ],
   },

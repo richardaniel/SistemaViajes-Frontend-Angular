@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { DevExtremeModule, DxTextBoxModule } from 'devextreme-angular';
 import { MapaModalComponent } from "../../../../shared/components/mapa-modal/mapa-modal.component";
 import { ColaboradorService } from '../../services/colaborador.service';
-import Swal from 'sweetalert2';
+
 import { SweetAlertService } from '../../../../shared/services/sweet-alert.service';
 
 
@@ -28,7 +28,10 @@ export class ColaboradorComponent implements OnInit{
   colaboradorForm!: FormGroup;
   isMapPopupVisible = false;
   selectedLocation: { lat: number; lng: number; address: string; country: string; state: string; city: string } | null = null;
-  
+  imagenSeleccionada: File | null = null;
+  imagenVistaPrevia: string | null = null;
+
+
   ngOnInit(): void {
      
   
@@ -64,6 +67,19 @@ export class ColaboradorComponent implements OnInit{
     console.log('Ubicación seleccionada en Perfil:', this.selectedLocation);
   }
 
+  // Método para manejar la selección de imagen
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.imagenSeleccionada = file;
+
+      // Mostrar vista previa de la imagen
+      const reader = new FileReader();
+      reader.onload = (e) => (this.imagenVistaPrevia = reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }
+
   getIdFromCountry(countryName: string): number {
     const countryList = [
       { id: 1, name: 'Honduras' },
@@ -90,41 +106,54 @@ export class ColaboradorComponent implements OnInit{
   }
 
   onSubmit() {
-   
     if (this.colaboradorForm.invalid) {
-      this.sweetAlert.advertencia("Campos Incompletos","Debe de ingresar todos los campos que son requeridos para continuar.a")
+      this.sweetAlert.advertencia("Campos Incompletos", "Debe de ingresar todos los campos requeridos para continuar.");
       return;
     }
-  
+
     if (this.selectedLocation) {
       this.colaboradorForm.patchValue({
         latitud: this.selectedLocation.lat,
         longitud: this.selectedLocation.lng,
-        direccion: this.selectedLocation.address,
-        // paisId: this.getIdFromCountry(this.selectedLocation.country),
-        // estadoId: this.getIdFromState(this.selectedLocation.state),
-        // ciudadId: this.getIdFromCity(this.selectedLocation.city)
-        
-        
+        direccion: this.selectedLocation.address
       });
     }
-  
-    this.colaboradorService.addColaborador(this.colaboradorForm.value)
+
+    const formData = new FormData();
+
+    // Agregar los campos uno por uno en lugar de enviarlos como JSON
+    formData.append('Nombre', this.colaboradorForm.value.nombre);
+    formData.append('Apellido', this.colaboradorForm.value.apellido);
+    formData.append('Email', this.colaboradorForm.value.email);
+    formData.append('Telefono', this.colaboradorForm.value.telefono);
+    formData.append('Latitud', this.colaboradorForm.value.latitud);
+    formData.append('Longitud', this.colaboradorForm.value.longitud);
+    formData.append('Direccion', this.colaboradorForm.value.direccion);
+    formData.append('PaisId', this.colaboradorForm.value.paisId);
+    formData.append('EstadoId', this.colaboradorForm.value.estadoId);
+    formData.append('CiudadId', this.colaboradorForm.value.ciudadId);
+
+    
+    if (this.imagenSeleccionada) {
+        formData.append('Imagen', this.imagenSeleccionada);
+    }
+
+    this.colaboradorService.addColaborador(formData)
     .subscribe({
       next: (response) => {
         console.log(response);
         this.sweetAlert.exito('Guardado', 'El colaborador ha sido registrado correctamente.');
         this.colaboradorForm.reset(); 
         this.selectedLocation = null;
+        this.imagenVistaPrevia = null;
       },
       error: (err) => {
         console.error(err);
         this.sweetAlert.error('Error', 'Hubo un problema al guardar el colaborador. Inténtelo nuevamente.');
       }
     });
-  
-  }
-  
+}
+
 }
 
 

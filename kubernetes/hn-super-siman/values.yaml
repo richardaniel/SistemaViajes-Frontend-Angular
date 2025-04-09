@@ -1,0 +1,17 @@
+templateVersion: v2
+customRoute:
+  enabled: true
+  domain: "apps.academia-dev.grupofarsiman.io"
+  tlsSecretName: tls-dev-academia.grupofarsiman.io
+
+defaultRoute:
+  include:
+    entorno: true
+    pais: false
+    empresa: false
+appInfo:
+  sistema: "transporte-web"
+  equipo: "academia"
+  tecnologia: "angular"
+  app: "transporte-webclient"
+  cluster: "k8s-dev"
