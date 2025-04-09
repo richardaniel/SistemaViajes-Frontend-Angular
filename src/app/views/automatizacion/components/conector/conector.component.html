@@ -45,34 +45,40 @@
       </button>
     </form>
   
-    <!-- Results Section -->
     <div *ngIf="productosCoincidencia.length > 0" class="mt-8">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">Resultados de coincidencia:</h3>
-      <div class="shadow overflow-hidden border-b border-gray-200 rounded-lg">
-        <dx-data-grid
-          [dataSource]="productosCoincidencia"
-          [allowColumnResizing]="true"
-          [showBorders]="true"
-          
-          class="dx-theme-generic"
-        >
-          <dxo-selection mode="single"></dxo-selection>
-          <dxi-column dataField="nombre" caption="Nombre" [width]="200"></dxi-column>
-         
-        </dx-data-grid>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Resultados de coincidencia:</h3>
+        <div class="shadow overflow-hidden border-b border-gray-200 rounded-lg">
+          <dx-data-grid
+            [dataSource]="productosCoincidencia"
+            [allowColumnResizing]="true"
+            [showBorders]="true"
+            keyExpr="nombre"  
+            [hoverStateEnabled]="true"
+            [rowAlternationEnabled]="true"
+            (onSelectionChanged)="onSeleccionProducto($event)"
+          >
+            <dxo-selection mode="single"></dxo-selection>
+            <dxi-column dataField="nombre" caption="Nombre" [width]="200"></dxi-column>
+          </dx-data-grid>
+        </div>
       </div>
-    </div>
   
     <!-- Selected Product -->
     <div class="mt-6">
       <h3 class="text-lg font-medium text-gray-900 mb-2">Producto seleccionado:</h3>
       <dx-select-box
-        [items]="productos"
+        [items]="productosFiltrados"
         displayExpr="Nombre"
         valueExpr="Producto_ID"
         [(value)]="productoSeleccionado"
         class="dx-theme-generic"
         (onChange)="escucharElOnchange($event)"
+        placeholder="Selecciona un producto"
+  [searchEnabled]="true"
+  [minSearchLength]="2"
+  [showClearButton]="true"
+  [dropDownOptions]="{ height: 400 }"
+  class="w-full"
       ></dx-select-box>
     </div>
   </div>

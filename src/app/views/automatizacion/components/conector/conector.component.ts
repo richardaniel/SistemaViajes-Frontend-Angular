@@ -25,6 +25,10 @@ export class ConectorComponent implements OnInit {
   productosCoincidencia: NombreProductoCoincidencia[] = [];
   productos!: ProductoBaseDeDatos[];
   productoSeleccionado: string = '';
+  nombreFiltro: string = '';
+  productosFiltrados: ProductoBaseDeDatos[] = [];
+
+
 
   // Supported image types
   readonly supportedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp'];
@@ -43,12 +47,11 @@ export class ConectorComponent implements OnInit {
   ngOnInit() {
     this.productoService.cargarProductosDB().subscribe({
       next: (data) => {
-        this.productos = data.filter(x =>{
-          return x.Nombre.includes("CALMOL")
-        })
+        this.productos = data
+        
         console.log('La data de productos es: ', this.productos)
         console.log('La data de productos de data es: ', data.slice(0, 100))
-        this.cdf.detectChanges();
+        
       },
       error: () => {
         this.sweetAlert.error('Error', 'No se pudieron cargar los productos desde la base de datos.');
@@ -81,17 +84,44 @@ export class ConectorComponent implements OnInit {
   }
 
   onSeleccionProducto(e: DxDataGridTypes.SelectionChangedEvent) {
-    const nombreSeleccionado = e.selectedRowsData[0]?.Nombre;
-    if (!nombreSeleccionado) return;
-
-    this.productos = [
-      { Producto_ID: 'P001', Nombre: nombreSeleccionado, CodBarra: '1234567890' }
-    ];
-    this.productoSeleccionado = this.productos[0].Producto_ID;
+    
+    const filaSeleccionada = e.selectedRowsData[0];
+    
+    if (!filaSeleccionada) {
+     
+      this.productosFiltrados = [];
+      this.productoSeleccionado = '';
+      this.cdf.detectChanges();
+      return;
+    }
+  
+    this.nombreFiltro = filaSeleccionada.nombre;
+    
+    const palabrasClave = this.nombreFiltro
+      .toLowerCase()
+      .replace(/[-\s]+/g, ' ') 
+      .split(' ')
+      .filter(palabra => palabra.length > 3); 
+  
+    console.log('Palabras clave extraídas:', palabrasClave);
+  
+   
+    this.productosFiltrados = this.productos.filter(producto => {
+      const nombreProducto = producto.Nombre.toLowerCase();
+      const coincide = palabrasClave.some(palabra => nombreProducto.includes(palabra));
+     
+      return coincide;
+    });
+  
+   
+  
+    this.productoSeleccionado = this.productosFiltrados[0]?.Producto_ID || '';
+    this.cdf.detectChanges();
   }
+  
 
   escucharElOnchange(event:any){
-    console.log('Esto me llevalos logs: ', event);
+  
     
   }
 
@@ -104,21 +134,16 @@ export class ConectorComponent implements OnInit {
 
     const file = input.files[0];
     
-    // Validate file type
+  
     if (!this.supportedImageTypes.includes(file.type)) {
       this.sweetAlert.error('Error', 'Formato de imagen no soportado. Use JPEG, PNG, GIF o BMP.');
       return;
     }
 
-    // Validate file size (e.g., 5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      this.sweetAlert.error('Error', 'La imagen es demasiado grande. Tamaño máximo: 5MB.');
-      return;
-    }
+   
 
     this.imagenSeleccionada = file;
     
-    // Create preview
     const reader = new FileReader();
     reader.onload = () => {
       this.imagenVistaPrevia = reader.result as string;
