@@ -177,8 +177,14 @@ export class ConectorComponent implements OnInit {
     console.log(matchData);
   
     this.productoService.insertarProducto(matchData).subscribe({
-      next: () => {
-        this.sweetAlert.exito('Éxito', 'Match enviado correctamente.');
+      next: (data) => {
+
+        if(data.codigo=='400'){
+          this.sweetAlert.advertencia('Advertencia', 'El producto ya ha sido enlazado anteriormente.');
+        }else{
+          this.sweetAlert.exito('Éxito', 'Match enviado correctamente.');
+        }
+        
       },
       error: (err) => {
         console.error('Error al enviar match:', err);

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { NombreProductoCoincidencia } from '../models/NombreProductoCoincidencia';
 import { ProductoBaseDeDatos } from '../models/ProductoBD';
 import { ProductoInsert } from '../models/ProductoInsert';
+import { response } from '../models/response';
 
 @Injectable({ providedIn: 'root' })
 export class ProductoService {
@@ -25,7 +26,7 @@ export class ProductoService {
   }
 
 
-  insertarProducto(data:ProductoInsert[]):Observable<ProductoInsert[]>{
-    return this.http.post<ProductoInsert[]>(this.urlProductoInsert,data);
+  insertarProducto(data:ProductoInsert[]):Observable<response>{
+    return this.http.post<response>(this.urlProductoInsert,data);
   }
 }
