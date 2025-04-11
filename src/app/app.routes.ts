@@ -82,6 +82,14 @@ export const routes: Routes = [
         path : 'automatizacion',
         loadComponent : () => 
           import('./views/automatizacion/pages/automatizacion/automatizacion.component').then((c)=>c.AutomatizacionComponent)
+      },
+      {
+        path:'lectura-cubetas',
+        loadComponent : ()=> import('./views/automatizacion/pages/lectura-cubetas/lectura-cubetas.component').then((c)=>c.LecturaCubetasComponent)
+      },
+      {
+        path:'captura-cubetas',
+        loadComponent : ()=> import('./views/automatizacion/components/botonvalidarcubeta/lectura-cubetas/lectura-cubetas.component').then((c)=>c.LecturaCubetasComponent)
       }
     ],
   },

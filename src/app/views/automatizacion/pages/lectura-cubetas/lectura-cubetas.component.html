@@ -1,0 +1,247 @@
+<!-- lectura-cubetas.component.html -->
+<div class="min-h-screen flex flex-col">
+  <form [formGroup]="productosForm" class="flex-grow space-y-6 text-white p-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Columna izquierda - Imagen inicial -->
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <label for="imageUpload" class="block text-sm font-medium text-white">
+            Seleccionar Imagen Cubeta
+          </label>
+          <input
+            type="file"
+            id="imageUpload"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            [disabled]="codigoBarrasDetectado"
+            class="block w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+          />
+        </div>
+
+        <div *ngIf="imagenVistaPrevia" class="flex justify-center">
+          <img
+            [src]="imagenVistaPrevia"
+            alt="Vista previa"
+            class="max-h-64 rounded-md border border-gray-200 shadow-lg object-contain"
+          />
+        </div>
+
+        <div *ngIf="cargando" class="text-center text-blue-300 font-medium">
+          Procesando imagen...
+        </div>
+
+        <div
+          *ngIf="imagenVistaPrevia && !codigoBarrasDetectado && !cargando"
+          class="flex justify-center"
+        >
+          <button
+            type="button"
+            (click)="enviarCodigoCubeta()"
+            class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+          
+            Enviar imagen
+          </button>
+        </div>
+      </div>
+
+      <!-- Columna derecha - Resultados y múltiples imágenes -->
+      <div class="space-y-6">
+        <label
+          *ngIf="codigoBarrasDetectado"
+          class="block text-center text-lg font-semibold text-green-400"
+        >
+          Código de barras de cubeta detectado: {{ codigoBarrasDetectado }}
+        </label>
+
+        <div *ngIf="codigoBarrasDetectado" class="space-y-2">
+          <label for="multiUpload" class="block text-sm font-medium text-white">
+            Subir imágenes adicionales
+          </label>
+          <input
+            type="file"
+            id="multiUpload"
+            accept="image/*"
+            multiple
+            (change)="onSeleccionarMultiplesImagenes($event)"
+            class="block w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-white hover:file:bg-green-600"
+          />
+        </div>
+
+        <div *ngIf="imagenesMultiples.length > 0" class="mt-4 space-y-2">
+          <div class="text-center text-gray-200 text-sm">
+            Desliza para ver más imágenes
+          </div>
+
+          <div
+            #contenedorScroll
+            class="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
+            (mousedown)="onDragStart($event)"
+            (mouseleave)="onDragEnd()"
+            (mouseup)="onDragEnd()"
+            (mousemove)="onDragMove($event)"
+          >
+            <div
+              *ngFor="let img of imagenesMultiples; let i = index"
+              class="relative flex-shrink-0 w-40"
+            >
+              <img
+                [src]="img.preview"
+                draggable="false"
+                class="h-32 w-full object-cover border rounded shadow-lg transition-transform duration-200 hover:scale-105"
+              />
+              <button
+                type="button"
+                (click)="eliminarImagen(i)"
+                class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center z-10"
+                title="Eliminar imagen"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón para enviar imágenes adicionales -->
+        <div
+          *ngIf="codigoBarrasDetectado && imagenesMultiples.length > 0"
+          class="flex justify-center"
+        >
+          <button
+            type="button"
+            (click)="enviarImagenesAdicionales()"
+            class="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-emerald-700"
+          >
+            Enviar imágenes productos
+          </button>
+        </div>
+
+        <dx-data-grid
+          id="gridContainer"
+          [dataSource]="productosCubeta"
+          keyExpr="nombre"
+          [showBorders]="true"
+          [hoverStateEnabled]="true"
+          [rowAlternationEnabled]="true"
+          [columnAutoWidth]="true"
+          (onSelectionChanged)="onSelectionChanged($event)"
+          (onContentReady)="onContentReady($event)"
+        >
+          <dxo-selection mode="single"></dxo-selection>
+          <dxo-master-detail
+            [enabled]="true"
+            template="detail"
+            onchange="onSelectionChanged($event)"
+            onclick="onSelectionChanged($event)"
+          ></dxo-master-detail>
+
+          <dxi-column
+          dataField="codigo"
+          caption="Código"
+          [width]="120"
+          ></dxi-column>
+          <dxi-column
+          dataField="codigoBarra"
+          caption="Código de Barra"
+          [width]="150"
+          ></dxi-column>
+          <dxi-column
+            dataField="nombre"
+            caption="Nombre del Producto"
+          ></dxi-column>
+          <dxi-column
+            dataField="cantidad"
+            caption="Cantidad del Producto"
+          ></dxi-column>
+
+          <div *dxTemplate="let data of 'detail'">
+            <div class="flex flex-col md:flex-row items-start gap-4 bg-gray-800 rounded shadow p-4 text-white">
+              <!-- Imagen siempre visible -->
+              <img
+                [src]="data.data.imagen"
+                alt="Imagen del producto"
+                class="w-32 h-32 object-contain rounded border border-gray-600"
+              />
+          
+              <!-- Contenido dependiendo de si tiene código -->
+              <div class="flex-1 space-y-2">
+                <ng-container *ngIf="data.data.codigo; else sinDatos">
+                  <p class="font-semibold text-lg">Detalles del producto</p>
+                  <p><strong>Nombre:</strong> {{ data.data.nombre }}</p>
+                  <p><strong>Código:</strong> {{ data.data.codigo }}</p>
+                  <p><strong>Código de Barra:</strong> {{ data.data.codigoBarra || "No disponible" }}</p>
+                </ng-container>
+          
+                <ng-template #sinDatos>
+                  <p class="font-semibold text-lg">Completar información del producto</p>
+          
+                  <label class="block text-sm font-medium text-white">
+                    Enlazar producto
+                  </label>
+          
+                  <dx-select-box
+                    [items]="productosBDFiltrados"
+                    displayExpr="Nombre"
+                    valueExpr="Producto_ID"
+                    [(value)]="productoSeleccionado"
+                    class="w-full md:w-64"
+                    placeholder="Selecciona un producto"
+                    [searchEnabled]="true"
+                    [minSearchLength]="2"
+                    [showClearButton]="true"
+                    [dropDownOptions]="{ height: 400 }"
+                  ></dx-select-box>
+          
+                  <button
+                    type="button"
+                    class="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-emerald-700"
+                    (click)="enviarMatchProducto()"
+                  >
+                 
+                    Enviar información
+                  </button>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+          
+
+
+        </dx-data-grid>
+
+        <div *ngIf="codigoBarrasDetectado" class="flex justify-center">
+          <button
+            type="button"
+            (click)="nuevoEscaneo()"
+            class="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Nuevo escaneo
+          </button>
+          <app-boton-enviar-cubeta
+          *ngIf="codigoBarrasDetectado"
+          [cubetaCode]="codigoBarrasDetectado"
+          [productos]="convertirProductos(productosCubeta)"
+        ></app-boton-enviar-cubeta>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Espacio reservado para contenido adicional -->
+  <div class="flex-shrink-0 p-4">
+    <!-- Aquí puedes agregar más contenido -->
+  </div>
+</div>

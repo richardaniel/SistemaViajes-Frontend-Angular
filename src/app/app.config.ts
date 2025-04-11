@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
     importProvidersFrom(
-  //BrowserModule,
+    //BrowserModule,
      IDFAngularModule.forRoot(environment.auth_config)
    ),
   ]

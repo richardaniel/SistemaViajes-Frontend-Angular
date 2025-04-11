@@ -59,7 +59,10 @@ menuItems = [
   { label: 'Reportes', link: '/home/reportes', icon:'textdocument', submenu: [], isOpen: false },
 
   {
-    label : 'Automatizacion' , link: '/home/automatizacion' , icon:'user',submenu:[] ,isOpen:false 
+    label : 'Automatizacion' , link: '/home/automatizacion' , icon:'user',submenu:[
+      { label: 'Match Productos', link: '/home/automatizacion' },
+      { label: 'Lectura Cubetas', link: '/home/lectura-cubetas' },
+    ] ,isOpen:false 
   }
 
 ];
