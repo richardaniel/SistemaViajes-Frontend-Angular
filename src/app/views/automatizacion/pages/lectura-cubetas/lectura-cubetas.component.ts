@@ -1,50 +1,50 @@
-// lectura-cubetas.component.ts (remains the same as previous version)
+// lectura-cubetas.component.ts
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, ViewChild ,NgModule, enableProdMode, OnInit  } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SweetAlertService } from '../../../../shared/services/sweet-alert.service';
 import { LecturaCubetaService } from '../../services/lectura-cubeta.service';
 import { codigoCubeta } from '../../models/CodigoCubeta';
 import { ProductoCoincidencia } from '../../models/ProductoCoincidencia';
-import { DxDataGridModule, DxTemplateModule ,DxFormModule, DxSelectBoxModule, DxTabPanelModule, } from 'devextreme-angular';
+import { DxDataGridModule, DxTemplateModule, DxSelectBoxModule } from 'devextreme-angular';
 import { DxDataGridTypes } from 'devextreme-angular/ui/data-grid';
-
-
-import { } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import DataSource from 'devextreme/data/data_source';
 import { ProductoBaseDeDatos } from '../../models/ProductoBD';
 import { ProductoService } from '../../services/producto.service';
 import { ProductoInsert } from '../../models/ProductoInsert';
-//import { DetailViewComponent } from './detail-view/detail-view.component';
-import { BotonEnviarCubetaComponent} from '../../components/botonvalidarcubeta/boton-enviar-cubeta.component';
-
-
-
-
+import { BotonEnviarCubetaComponent } from '../../components/botonvalidarcubeta/boton-enviar-cubeta.component';
 
 @Component({
   selector: 'app-lectura-cubetas',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule , DxDataGridModule,DxTemplateModule ,DxSelectBoxModule,BotonEnviarCubetaComponent ],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    DxDataGridModule,
+    DxTemplateModule,
+    DxSelectBoxModule,
+    BotonEnviarCubetaComponent
+  ],
   templateUrl: './lectura-cubetas.component.html',
   styleUrl: './lectura-cubetas.component.scss'
 })
-export class LecturaCubetasComponent  implements OnInit{
+export class LecturaCubetasComponent implements OnInit {
   @ViewChild('contenedorScroll') contenedorScroll!: ElementRef;
 
   productosForm: FormGroup;
   imagenSeleccionada: File | null = null;
   imagenVistaPrevia: string | null = null;
   codigoBarrasDetectado: string | null = null;
-  imagenesMultiples: { file: File, preview: string }[] = [];
-  cargando = false;
-  productosBD!: ProductoBaseDeDatos[];
-  productosBDFiltrados !: ProductoBaseDeDatos [];
+  imagenesMultiples: { file: File, preview: string, nombre:string }[] = [];
+  productosCubeta: ProductoCoincidencia[] = [];
+  productosBD: ProductoBaseDeDatos[] = [];
+  productosBDFiltrados: ProductoBaseDeDatos[] = [];
   nombreFiltro: string = '';
   productoSeleccionado: string = '';
-  productosCubeta!: ProductoCoincidencia[];
+
+  cargando = false;
+  cargandoImagenes = false;
+  cargandoMatch = false;
+  cargandoCubeta = false;
 
   isDragging = false;
   startX = 0;
@@ -52,25 +52,24 @@ export class LecturaCubetasComponent  implements OnInit{
 
   readonly supportedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp'];
 
-
   constructor(
     private readonly fb: FormBuilder,
     private readonly sweetAlert: SweetAlertService,
     private readonly cdf: ChangeDetectorRef,
     private readonly lecturaCubetaService: LecturaCubetaService,
-    private readonly productoService : ProductoService
+    private readonly productoService: ProductoService
   ) {
     this.productosForm = this.fb.group({
       imageUpload: [null]
     });
   }
+
   ngOnInit(): void {
     this.productoService.cargarProductosDB().subscribe({
       next: (data) => {
-        this.productosBD = data
-   
-        console.log('La data de productos de data es: ', data.slice(0, 100))
-        
+        this.productosBD = data;
+        console.log('Esta es la data del producto que me lleva: ', this.productosBD)
+        this.cdf.detectChanges();
       },
       error: () => {
         this.sweetAlert.error('Error', 'No se pudieron cargar los productos desde la base de datos.');
@@ -78,12 +77,20 @@ export class LecturaCubetasComponent  implements OnInit{
     });
   }
 
+  // Check if all DataGrid rows have valid values
+  allFieldsValid(): boolean {
+    return this.productosCubeta.length > 0 && this.productosCubeta.every(producto =>
+      producto.codigo &&
+      producto.codigoBarra &&
+      producto.nombre &&
+      producto.cantidad !== null && producto.cantidad !== undefined && producto.cantidad > 0
+    );
+  }
+
   convertirProductos(data: any[]): { itemcode: string, cantidad: number }[] {
-    // Transforma tu array 'productosCubeta' para que encaje
-    // con la interfaz del componente hijo
     return data.map(p => ({
       itemcode: p.codigo ?? p.itemcode ?? '',
-      cantidad: 1 // O la lógica que necesites
+      cantidad: p.cantidad || 1
     }));
   }
 
@@ -124,10 +131,12 @@ export class LecturaCubetasComponent  implements OnInit{
         this.codigoBarrasDetectado = respuesta[0].codigo_cubeta;
         this.sweetAlert.exito('Éxito', 'Código escaneado correctamente.');
         this.cargando = false;
+        this.cdf.detectChanges();
       },
       error: () => {
         this.sweetAlert.error('Error', 'Error al escanear cubeta. Verifica la imagen o la conexión.');
         this.cargando = false;
+        this.cdf.detectChanges();
       }
     });
   }
@@ -145,7 +154,7 @@ export class LecturaCubetasComponent  implements OnInit{
 
       const reader = new FileReader();
       reader.onload = () => {
-        this.imagenesMultiples.push({ file, preview: reader.result as string });
+        this.imagenesMultiples.push({ file, preview: reader.result as string, nombre:'' as string });
         this.cdf.detectChanges();
       };
       reader.readAsDataURL(file);
@@ -162,39 +171,36 @@ export class LecturaCubetasComponent  implements OnInit{
       this.sweetAlert.error('Error', 'No hay imágenes para enviar o falta el código de cubeta.');
       return;
     }
-  
+
+    this.cargandoImagenes = true;
+
     const formData = new FormData();
     this.imagenesMultiples.forEach((img, index) => {
       formData.append(`archivo${index + 1}`, img.file);
     });
-    
-  
+
     this.lecturaCubetaService.subirImagenesProductosCubeta(formData).subscribe({
-      next: (response) => {
-        console.log(response)
-        console.log('Asi me lleva la data del response: ', response)
+      next: (response: ProductoCoincidencia[]) => {
         this.productosCubeta = this.consolidarProductos(response);
-
-        console.log('Asi me lleva la data de los productos: ', this.productosCubeta)
-
-         // --JUST CAREFUL THIS ELIMINAR SI EL ORDEN DEVUELTO NO COINCIDE 
-      this.productosCubeta = this.productosCubeta.map((producto, index) => ({
-        ...producto,
-        imagen: this.imagenesMultiples[index]?.preview ?? null
-      }));
-
-      console.log('Data de productos seteados despues del map: ', this.productosCubeta)
-
+        this.productosCubeta = this.productosCubeta.map((producto, index) => ({
+          ...producto,
+          imagen: this.imagenesMultiples[index]?.preview ?? null
+        }));
         this.sweetAlert.exito('Éxito', 'Imágenes adicionales enviadas correctamente.');
+        this.cargandoImagenes = false;
+        this.cdf.detectChanges();
       },
       error: () => {
         this.sweetAlert.error('Error', 'Hubo un problema al enviar las imágenes.');
+        this.cargandoImagenes = false;
+        this.cdf.detectChanges();
       }
     });
   }
 
   private consolidarProductos(productos: ProductoCoincidencia[]): ProductoCoincidencia[] {
     const mapaProductos = new Map<string, ProductoCoincidencia>();
+    console.log('Lista de productos matcheados: ', productos)
 
     productos.forEach((producto) => {
       const nombre = producto.nombre;
@@ -207,117 +213,58 @@ export class LecturaCubetasComponent  implements OnInit{
       }
     });
 
+    console.log('Productos ya matcheados: ', Array.from(mapaProductos.values()))
+
     return Array.from(mapaProductos.values());
   }
 
-  onContentReady(e: DxDataGridTypes.ContentReadyEvent) {
+  enviarMatchProducto() {
+    const productoSelect = this.productosBDFiltrados.find(p => p.Producto_ID === this.productoSeleccionado);
+    const productoGrid = this.productosCubeta.find(p => p.nombre === this.nombreFiltro);
 
-    
-
-    
-    console.log('Esto me lleva el metodo onContentReady: ', e.element.outerText)
-
-    let encontroEncabezado = false;
-  
-    // for (const linea of e.element.outerText) {
-    //   // Verificar si es la línea de encabezado "Nombre del Producto"
-    //   if (linea.includes('Nombre del Producto')) {
-    //     encontroEncabezado = true;
-    //     continue;
-    //   }
-      
-    //   // Si ya encontramos el encabezado, la siguiente línea no vacía debería ser nuestro medicamento
-    //   if (encontroEncabezado && linea.trim()) {
-    //     console.log('Nombre producto encontrado: ', linea.trim())
-    //   }
-
-     
-    // }
-    
-  }
-
-  onSelectionChanged(e: DxDataGridTypes.SelectionChangedEvent) {
-  
-    
-    console.log('Esto me lleva el metodo onSelectionChanged: ', e)
-    const filaSeleccionada = e.selectedRowsData[0];
-    this.productosBDFiltrados = [];
-
-    if (!filaSeleccionada) {
-     
-      this.productosBDFiltrados = [];
-      this.productoSeleccionado = '';
-     
+    if (!productoSelect || !productoGrid) {
+      this.sweetAlert.error('Error', 'Debe seleccionar un producto del grid y del select.');
       return;
     }
-  
-    this.nombreFiltro = filaSeleccionada.nombre;
-    
-    const palabrasClave = this.nombreFiltro
-      .toLowerCase()
-      .replace(/[-\s]+/g, ' ') 
-      .split(' ')
-      .filter(palabra => palabra.length > 3); 
-  
-    console.log('Palabras clave extraídas:', palabrasClave);
-  
-   
-    this.productosBDFiltrados = this.productosBD.filter(producto => {
-      const nombreProducto = producto.Nombre.toLowerCase();
-      const coincide = palabrasClave.some(palabra => nombreProducto.includes(palabra));
-     
-      return coincide;
-    });
-  
-  
-    this.productoSeleccionado = this.productosBDFiltrados[0]?.Producto_ID || '';
-   
 
-  }
-  enviarMatchProducto() {
-      const productoSelect = this.productosBDFiltrados.find(p => p.Producto_ID === this.productoSeleccionado);
-      const productoGrid = this.productosCubeta.find(p => p.nombre === this.nombreFiltro);
+    this.cargandoMatch = true;
 
-      if (!productoSelect || !productoGrid) {
-        this.sweetAlert.error('Error', 'Debe seleccionar un producto del grid y del select.');
-        return;
-      }
-    
-      const matchData: ProductoInsert[] = [{
-        itemcode: productoSelect.Producto_ID,
-        codigobarra: productoSelect.CodBarra,
-        descripcionproductobd: productoSelect.Nombre,
-        descripcionproductoextraido: productoGrid.nombre
-      }];
+    const matchData: ProductoInsert[] = [{
+      itemcode: productoSelect.Producto_ID,
+      codigobarra: productoSelect.CodBarra,
+      descripcionproductobd: productoSelect.Nombre,
+      descripcionproductoextraido: productoGrid.nombre
+    }];
 
-      this.productosCubeta.filter(p => p.nombre === this.nombreFiltro)
-      .map(producto => ({
-        ...producto,
-        nombre: productoSelect.Nombre,
-        codigo: productoSelect.Producto_ID,
-        codigoBarra: productoSelect.CodBarra
-      }))
 
-      console.log('Asi me retorna los productos ya macheados: ', this.productosCubeta)
-  
-      console.log(matchData);
-    
-      this.productoService.insertarProducto(matchData).subscribe({
-        next: (data) => {
-  
-          if(data.codigo=='400'){
-            this.sweetAlert.advertencia('Advertencia', 'El producto ya ha sido enlazado anteriormente.');
-          }else{
-            this.sweetAlert.exito('Éxito', 'Match enviado correctamente.');
-          }
-          
-        },
-        error: (err) => {
-          console.error('Error al enviar match:', err);
-          this.sweetAlert.error('Error', 'No se pudo enviar el match.');
+
+    this.productoService.insertarProducto(matchData).subscribe({
+      next: (data) => {
+        if (data.codigo == '400') {
+          this.sweetAlert.advertencia('Advertencia', 'El producto ya ha sido enlazado anteriormente.');
+        } else {
+          this.sweetAlert.exito('Éxito', 'Match enviado correctamente.');
+          this.productosCubeta = this.productosCubeta.map(p => 
+            p.nombre === this.nombreFiltro ? {
+              ...p,
+              nombre: productoSelect.Nombre,
+              codigo: productoSelect.Producto_ID,
+              codigoBarra: productoSelect.CodBarra
+            } : p
+          );
+        this.cdf.detectChanges();
+
         }
-      });
-    }
+        this.cargandoMatch = false;
+        this.cdf.detectChanges();
+      },
+      error: () => {
+        this.sweetAlert.error('Error', 'No se pudo enviar el match.');
+        this.cargandoMatch = false;
+        this.cdf.detectChanges();
+      }
+    });
+  }
 
   nuevoEscaneo() {
     this.sweetAlert.confirmacion('¿Estás seguro?', 'Esto eliminará todo el contenido actual.').then((confirmado) => {
@@ -348,5 +295,71 @@ export class LecturaCubetasComponent  implements OnInit{
     const x = event.pageX - this.contenedorScroll.nativeElement.offsetLeft;
     const walk = (x - this.startX) * 2;
     this.contenedorScroll.nativeElement.scrollLeft = this.scrollLeft - walk;
+  }
+
+  onSelectionChanged(e: DxDataGridTypes.SelectionChangedEvent) {
+    const filaSeleccionada = e.selectedRowsData[0];
+    this.productosBDFiltrados = [];
+
+    if (!filaSeleccionada) {
+      this.productosBDFiltrados = [];
+      this.productoSeleccionado = '';
+      return;
+    }
+
+    this.nombreFiltro = filaSeleccionada.nombre;
+    
+    const palabrasClave = this.nombreFiltro
+      .toLowerCase()
+      .replace(/[-\s]+/g, ' ')
+      .split(' ')
+      .filter(palabra => palabra.length > 3);
+
+    this.productosBDFiltrados = this.productosBD.filter(producto => {
+      const nombreProducto = producto.Nombre.toLowerCase();
+      return palabrasClave.some(palabra => nombreProducto.includes(palabra));
+    });
+
+    this.productoSeleccionado = this.productosBDFiltrados[0]?.Producto_ID || '';
+    this.cdf.detectChanges();
+  }
+
+  eliminarProducto(producto: any)
+  {
+
+  this.sweetAlert.confirmacion('¿Estás seguro?', 'Esto eliminará el producto seleccionado.').then((confirmado) => {
+    if (confirmado) {
+      console.log('Esta es la data del producto seleccionado: ', producto)
+      console.log('Esta es la data del carrusel de imagenes:; ', this.imagenesMultiples)
+      const index = this.productosCubeta.findIndex((p) => p.nombre === producto.nombre)
+      if (index !== -1) {
+        this.productosCubeta.splice(index, 1)
+        this.cdf.detectChanges();
+        this.imagenesMultiples = this.imagenesMultiples.filter(item => item.preview !== producto.imagen);
+
+        // Si estás usando un servicio para gestionar los datos, llama al método correspondiente
+        // this.productoService.eliminarProducto(producto.id).subscribe(() => {
+        //   // Actualizar la vista después de eliminar
+        // });
+      }
+    }
+  });
+  // Prevenir la propagación del evento para evitar que se seleccione la fila
+  // if (confirm(`¿Estás seguro de que deseas eliminar el producto \"${producto.nombre}\"?`)) {
+  //   // Aquí implementa la lógica para eliminar el producto
+  //   // Por ejemplo:
+  //   const index = this.productosCubeta.findIndex((p) => p.nombre === producto.nombre)
+  //   if (index !== -1) {
+  //     this.productosCubeta.splice(index, 1)
+  //     // Si estás usando un servicio para gestionar los datos, llama al método correspondiente
+  //     // this.productoService.eliminarProducto(producto.id).subscribe(() => {
+  //     //   // Actualizar la vista después de eliminar
+  //     // });
+  //   }
+  // }
+}
+
+  onContentReady(e: DxDataGridTypes.ContentReadyEvent) {
+    // Implement if needed
   }
 }

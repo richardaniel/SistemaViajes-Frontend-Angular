@@ -82,7 +82,7 @@ export class LecturaCubetasComponent  implements OnInit{
     // con la interfaz del componente hijo
     return data.map(p => ({
       itemcode: p.codigo ?? p.itemcode ?? '',
-      cantidad: 1 // O la lógica que necesites
+      cantidad: 1 
     }));
   }
   
@@ -269,7 +269,18 @@ export class LecturaCubetasComponent  implements OnInit{
         descripcionproductobd: productoSelect.Nombre,
         descripcionproductoextraido: productoGrid.nombre
       }];
+      
+      this.productosCubeta.filter(p => p.nombre === this.nombreFiltro)
+      .map(producto => ({
+        ...producto,
+        nombre: productoSelect.Nombre,
+        codigo: productoSelect.Producto_ID,
+        codigoBarra: productoSelect.CodBarra
+      }))
+
+      console.log('Asi me retorna los productos ya macheados: ', this.productosCubeta)
   
+      
       console.log(matchData);
     
       this.productoService.insertarProducto(matchData).subscribe({

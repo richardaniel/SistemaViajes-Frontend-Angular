@@ -1,43 +1,148 @@
 // lectura-cubetas.component.scss
 :host {
-    display: block;
-    height: 100%;
+  display: block;
+  height: 100%;
+}
+
+.bg-gray-900 {
+  background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #6b7280;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background-color: #1f2937;
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
+
+form {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+img {
+  user-select: none;
+}
+
+.grid {
+  align-items: start;
+}
+
+/* DevExtreme Custom Styles */
+:host ::ng-deep {
+  .dx-datagrid {
+    background: #1f2937;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
   }
-  
-  .scrollbar-thin {
-    scrollbar-width: thin;
+
+  .dx-datagrid-headers {
+    background: #374151;
+    border-bottom: 2px solid #4b5563;
   }
-  
-  .scrollbar-thin::-webkit-scrollbar {
-    height: 8px;
+
+  .dx-datagrid-header-panel {
+    padding: 8px !important;
   }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #4b5563;
-    border-radius: 4px;
+
+  .dx-header-row > td {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #f3f4f6 !important;
+    padding: 12px !important;
+    white-space: normal !important;
   }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background-color: #1f2937;
+
+  .dx-datagrid-rowsview {
+    .dx-data-row {
+      td {
+        font-size: 16px !important;
+        color: #e5e7eb !important;
+        padding: 12px !important;
+        white-space: normal !important;
+      }
+    }
+
+    .dx-row-alt {
+      background: #2d3748 !important;
+    }
+
+    /* Enable vertical scrolling only */
+    .dx-datagrid-content {
+      max-height: 500px !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+    }
   }
-  
-  .cursor-grab {
-    cursor: grab;
+
+  .dx-datagrid-content {
+    .dx-datagrid-table {
+      width: 100% !important;
+      table-layout: fixed !important;
+    }
   }
-  
-  .cursor-grabbing {
-    cursor: grabbing;
+
+  .dx-master-detail-row {
+    background: #2d3748 !important;
+    border-top: 2px solid #4b5563 !important;
   }
-  
-  form {
-    max-width: 1200px;
-    margin: 0 auto;
+
+  .dx-selectbox {
+    .dx-texteditor {
+      background: #374151 !important;
+      border: 2px solid #4b5563 !important;
+      border-radius: 8px !important;
+      color: #f3f4f6 !important;
+      font-size: 16px !important;
+      padding: 12px !important;
+    }
+
+    .dx-dropdowneditor-button {
+      background: #4b5563 !important;
+    }
   }
-  
-  img {
-    user-select: none;
+
+  .dx-datagrid .dx-row-lines > td {
+    border-bottom: 1px solid #4b5563 !important;
+    background: #374151 !important;
   }
-  
-  .grid {
-    align-items: start;
+
+  /* Remove horizontal scrollbar */
+  .dx-datagrid-borders {
+    .dx-datagrid-scrollable {
+      overflow-x: hidden !important;
+    }
   }
+
+  /* Ensure columns don't shrink */
+  .dx-datagrid-table {
+    td {
+      min-width: 0 !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+  }
+}

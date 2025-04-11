@@ -20,18 +20,39 @@ interface Producto {
   selector: 'app-boton-enviar-cubeta',
   imports: [CommonModule],
   template: `
-    <button
+    <!-- <button
       (click)="enviarDatos()"
-      class="px-4 py-2 bg-blue-500 text-white rounded"
+       [disabled]="disabled"
+       class=" bg-blue-500  px-8 py-4 text-white rounded-xl hover:bg-blue-700 text-lg font-semibold shadow-lg transition-all duration-200 flex items-center"
     >
       Enviar al flujo
-    </button>
+    </button> -->
+
+    <button
+                      type="button"
+                      [disabled]="cargandoMatch"
+                      (click)="enviarDatos()"
+                      class=" px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 text-lg font-semibold shadow-lg transition-all duration-200 flex items-center"
+                    >
+                      <svg *ngIf="cargandoMatch" class="animate-spin h-6 w-6 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <svg *ngIf="!cargandoMatch" class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {{ cargandoMatch ? 'Enviando...' : 'Enviar información' }}
+                    </button>
   `,
   styleUrls: []
 })
 export class BotonEnviarCubetaComponent {
     
     constructor(private http: HttpClient,private readonly sweetAlert: SweetAlertService) {}
+
+    cargandoMatch = false;
+    @Input() disabled: boolean = false;
+
   /**
    * Código de la cubeta (lo que luego tu flujo necesita como "cubetacode").
    */
@@ -59,6 +80,8 @@ export class BotonEnviarCubetaComponent {
 //     console.log('JSON a enviar al flujo:', body);
 //   }
 enviarDatos(): void {
+
+  this.cargandoMatch = true;
     const body = {
       cubetacode: this.cubetaCode,
       productos: this.productos
@@ -128,9 +151,12 @@ enviarDatos(): void {
           this.sweetAlert.error('Diferencia de Cantidad', dif.Mensaje);
         });
       }
+
+      this.cargandoMatch = false;
     },
     error: (error) => {
       console.error('Error al llamar al flujo:', error);
+      this.cargandoMatch = false;
     }
   });
   }
